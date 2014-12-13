@@ -4,8 +4,7 @@
 
 Note: Despite having capitalized names, iterators are not meant to be used with the `new` keyword.
 
-{:lang="js"}
-~~~~~~~~
+```js
 function FlatArrayIterator (array) {
   var index;
   index = 0;
@@ -42,12 +41,11 @@ function RecursiveArrayIterator (array) {
   };
   return myself;
 };
-~~~~~~~~
+```
 
 ### unfolding iterators
 
-{:lang="js"}
-~~~~~~~~
+```js
 function NumberIterator (base) {
   var number;
   if (base == null) {
@@ -70,12 +68,11 @@ function FibonacciIterator () {
     return value;
   };
 };
-~~~~~~~~
+```
 
 ### decorators for slicing iterators
 
-{:lang="js"}
-~~~~~~~~
+```js
 function take (iter, numberToTake) {
   var count = 0;
   return function() {
@@ -110,14 +107,13 @@ function slice (iter, numberToDrop, numberToTake) {
   }
   else return iter;
 };
-~~~~~~~~
+```
 
 (`drop` was suggested by Redditor [skeeto](http://www.reddit.com/user/skeeto). His code also cleaned up an earlier version of `slice`.)
 
 ### catamorphic decorator
 
-{:lang="js"}
-~~~~~~~~
+```js
 function fold (iter, binaryFn, seed) {
   var acc, element;
   acc = seed;
@@ -128,12 +124,11 @@ function fold (iter, binaryFn, seed) {
   }
   return acc;
 };
-~~~~~~~~
+```
 
 ### hylomorphic decorators
 
-{:lang="js"}
-~~~~~~~~
+```js
 function map (iter, unaryFn) {
   return function() {
     var element;
@@ -175,4 +170,4 @@ function filter (iter, unaryPredicateFn) {
     return void 0;
   };
 };
-~~~~~~~~
+```

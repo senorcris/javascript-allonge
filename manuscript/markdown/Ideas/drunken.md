@@ -5,8 +5,7 @@ In [Tortoises, Hares, and Teleporting Turtles](#tortoises), we looked at the "To
 1. The mechanism for iterating over a list.
 2. The algorithm for detecting a loop in a list.
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 var LinkedList = (function() {
 
   function LinkedList(content, next) {
@@ -40,7 +39,7 @@ function tortoiseAndHareLoopDetector (list) {
   }
   return false;
 };
-~~~~~~~~
+```
 
 ### functional iterators
 
@@ -48,15 +47,14 @@ We then went on to discuss how to use [functional iterators](#functional-iterato
 
 For example, here is a function that takes an array and returns a functional iterator over the array:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function ArrayIterator (array) {
   var index = 0;
   return function() {
     return array[index++];
   };
 };
-~~~~~~~~
+```
 
 Iterators allow us to write (or refactor) functions to operate on iterators instead of data structures. That increases reuse. We can also write higher-order functions that operate directly on iterators such as mapping and selecting. That allows us to write lazy algorithms.
 
@@ -64,8 +62,7 @@ Iterators allow us to write (or refactor) functions to operate on iterators inst
 
 Now we'll refactor the Tortoise and Hare to use iterators instead of directly operate on linked lists. We'll add an `.iterator()` method to linked lists, and we'll rewrite our loop detector function to take an "iterable" instead of a list:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 LinkedList.prototype.iterator = function() {
   var list = this;
   return function() {
@@ -97,7 +94,7 @@ list.tailNode().next = list.next;
 
 tortoiseAndHareLoopDetector(list);
   //=> true
-~~~~~~~~
+```
 
 We have now refactored it into a function that operates on anything that responds to the `.iterator()` method. It's classic "Duck Typed" Object-Orientation. So, how shall we put it to work?
 
@@ -121,8 +118,7 @@ Therefore, if we think of this as detecting whether the chequer revisits a squar
 
 In essence, we're given an object that has a `.iterator()` method. That gives us an iterator, and each time we call the iterator, we get a direction. Here it is:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 var DIRECTION_TO_DELTA = {
   N: [1, 0],
   E: [0, 1],
@@ -188,7 +184,7 @@ i();
   //=> 'S'
   //   ...
 
-~~~~~~~~
+```
 
 In the example above, we have the smallest possible repeating path: The chequer shuttles back and forth between two squares. It will not always be so obvious when a game does not terminate.
 
@@ -198,8 +194,7 @@ Our goal is to transform the iteration of directions into an iteration that the 
 
 We'll use a `statefulMap`:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function statefulMap (iter, binaryFn, initial) {
   var state = initial;
   return function () {
@@ -215,15 +210,14 @@ function statefulMap (iter, binaryFn, initial) {
     }
   }
 };
-~~~~~~~~
+```
 
 `statefulMap` takes in iterator and maps it to a new iterator. Unlike a "regular" map, it computes its elements on demand, so it will not run indefinitely when given an iteration representing an infinitely looping chequer. We need a stateful map because we are tracking a position that changes over time even when given the same direction over and over again.
 
 Here's how we use `statefulMap`:
 
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function RelativeIterator (directionIterator) {
   return statefulMap(directionIterator, function (relativePositionStr, directionStr) {
     var delta = DIRECTION_TO_DELTA[directionStr],
@@ -251,12 +245,11 @@ i();
   //=> '-3 2'
 i();
   //=> '-3 3'
-~~~~~~~~
+```
 
 We're almost there! The refactored `tortoiseAndHareLoopDetector` expects an "iterable," an object that implements the  `.iterator()` method. Let's refactor `RelativeIterable` to accept a game and return an iterable instead of accepting an iteration and returning an iteration:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function RelativeIterable (game) {
   return {
     iterator: function () {
@@ -282,7 +275,7 @@ i();
   //=> '2 0'
 i();
   //=> undefined
-~~~~~~~~
+```
 
 ### the solution
 
@@ -290,8 +283,7 @@ So. We can take a `Game` instance and produce an iterable that iterates over reg
 
 Our refactored `tortoiseAndHareLoopDetector` takes an iterable and detects this for us. Writing a detector function is trivial:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function terminates (game) {
   return !tortoiseAndHareLoopDetector(RelativeIterable(game));
 }
@@ -304,7 +296,7 @@ terminates(new Game(4));
   //=> false
 terminates(new Game(4));
   //=> false
-~~~~~~~~
+```
 
 ### preliminary conclusion
 
@@ -316,8 +308,7 @@ Can we also refactor the "Teleporting Turtle" algorithm to take an iterable? If 
 
 We start with:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function teleportingTurtleLoopDetector (list) {
   var i, rabbit, speed, turtle;
   speed = 1;
@@ -347,12 +338,11 @@ list.tailNode().next = list.next;
 
 teleportingTurtleLoopDetector(list);
   //=> true
-~~~~~~~~
+```
 
 And refactor it to become:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function teleportingTurtleLoopDetector (iterable) {
   var i, rabbit, rabbitValue, speed, turtleValue;
   speed = 1;
@@ -383,12 +373,11 @@ list.tailNode().next = list.next;
 
 teleportingTurtleLoopDetector(list);
   //=> true
-~~~~~~~~
+```
 
 Now we can plug it into our termination detector:
 
-{:lang="javascript"}
-~~~~~~~~
+```js
 function terminates (game) {
   return !teleportingTurtleLoopDetector(RelativeIterable(game));
 }
@@ -403,6 +392,6 @@ terminates(new Game(4));
   //=> false
 terminates(new Game(4));
   //=> true
-~~~~~~~~
+```
 
 Refactoring an algorithm to work with iterators allows us to use the same algorithm to solve different problems and to swap algorithms for the same problem. This is natural, we have created an abstraction that allows us to plug different items into either side of its interface.

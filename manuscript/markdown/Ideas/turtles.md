@@ -8,8 +8,7 @@ I think I told him that I was trying to figure out if I could adapt a hashing al
 
 I went home and pondered the problem. I wanted to solve it. Eventually, I came up with something and tried it (In Java!) on my home PC. I sent him an email sharing my result, to demonstrate my ability to follow through. I then forgot about it for a while. Some time later, I was told that the correct solution was:
 
-{:lang="js"}
-~~~~~~~~
+```js
 var LinkedList, list, tortoiseAndHareLoopDetector;
 
 LinkedList = (function() {
@@ -55,14 +54,13 @@ list.tailNode().next = list.next;
 
 tortoiseAndHareLoopDetector(list);
   //=> true
-~~~~~~~~
+```
   
 This algorithm is called "The Tortoise and the Hare," and was discovered by Robert Floyd in the 1960s. You have two node references, and one traverses the list at twice the speed of the other. No matter how large it is, you will eventually have the fast reference equal to the slow reference, and thus you'll detect the loop.
 
 At the time, I couldn't think of any way to use hashing to solve the problem, so I gave up and tried to fit this into a powers-of-two algorithm. My first pass at it was clumsy, but it was roughly equivalent to this:
 
-{:lang="js"}
-~~~~~~~~
+```js
 var list, teleportingTurtleLoopDetector;
 
 teleportingTurtleLoopDetector = function(list) {
@@ -94,7 +92,7 @@ list.tailNode().next = list.next;
 
 teleportingTurtleLoopDetector(list);
   //=> true
-~~~~~~~~
+```
   
 Years later, I came across a discussion of this algorithm, [The Tale of the Teleporting Turtle](http://www.penzba.co.uk/Writings/TheTeleportingTurtle.html). It seems to be faster under certain circumstances, depending on the size of the loop and the relative costs of certain operations.
 
